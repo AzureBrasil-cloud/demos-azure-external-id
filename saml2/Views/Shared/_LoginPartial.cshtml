@@ -1,0 +1,15 @@
+@{
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+}
+
+@if (isAuthenticated)
+{
+    <div class="d-flex align-items-center gap-2">
+        <span class="navbar-text text-muted d-none d-md-inline">@User.Identity?.Name</span>
+        <a class="btn btn-sm btn-outline-secondary" asp-controller="Account" asp-action="SignOut">Sair</a>
+    </div>
+}
+else
+{
+    <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="SignIn">Entrar</a>
+}

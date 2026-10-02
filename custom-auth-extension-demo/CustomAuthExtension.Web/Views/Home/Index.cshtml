@@ -1,0 +1,82 @@
+@{
+    ViewData["Title"] = "Home";
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+
+    string Claim(params string[] types) =>
+        types.Select(t => User.FindFirst(t)?.Value).FirstOrDefault(v => !string.IsNullOrWhiteSpace(v)) ?? "—";
+
+    var displayName = isAuthenticated ? Claim("name", "given_name") : "Visitante";
+    var extensionClaims = User.Claims.Where(c => ExtensionClaimTypes.Contains(c.Type)).ToList();
+}
+
+<section class="hero-panel">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <span class="status-pill">External ID + Custom Authentication Extension</span>
+            <h1 class="display-5 fw-semibold mt-3">Claims vindas da sua API, direto no token</h1>
+            <p class="lead mt-3 text-muted">
+                No login, o Microsoft Entra External ID dispara o evento <strong>OnTokenIssuanceStart</strong> e chama
+                a nossa API hospedada no Azure App Service. A API devolve claims extras que são incluídas no token
+                emitido para esta aplicação OpenID Connect.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                @if (isAuthenticated)
+                {
+                    <a class="btn btn-primary btn-lg" asp-controller="Home" asp-action="Token">Ver detalhes do token</a>
+                    <a class="btn btn-outline-secondary btn-lg" asp-controller="Account" asp-action="SignOut">Sair</a>
+                }
+                else
+                {
+                    <a class="btn btn-primary btn-lg" asp-controller="Account" asp-action="SignIn">Entrar com External ID</a>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="info-card">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                    <div>
+                        <div class="text-uppercase text-secondary small fw-semibold">Estado atual</div>
+                        <h2 class="h4 mt-1 mb-0">@displayName</h2>
+                    </div>
+                    <span class="badge @(isAuthenticated ? "text-bg-success" : "text-bg-secondary")">
+                        @(isAuthenticated ? "Autenticado" : "Não autenticado")
+                    </span>
+                </div>
+
+                @if (isAuthenticated)
+                {
+                    <dl class="row mt-4 mb-0 small">
+                        <dt class="col-5 text-secondary">Email</dt>
+                        <dd class="col-7">@Claim("email", "preferred_username")</dd>
+                        <dt class="col-5 text-secondary">Object ID</dt>
+                        <dd class="col-7 text-break">@Claim("oid", "sub")</dd>
+                        <dt class="col-5 text-secondary">Tenant ID</dt>
+                        <dd class="col-7 text-break">@Claim("tid")</dd>
+                    </dl>
+
+                    <div class="text-uppercase text-secondary small fw-semibold mt-4">Claims da Custom Extension</div>
+                    @if (extensionClaims.Count == 0)
+                    {
+                        <p class="small text-danger mb-0 mt-2">Nenhuma claim da extensão encontrada no token.</p>
+                    }
+                    else
+                    {
+                        <dl class="row mt-2 mb-0 small">
+                            @foreach (var claim in extensionClaims)
+                            {
+                                <dt class="col-5 extension-claim-name">@claim.Type</dt>
+                                <dd class="col-7 text-break">@claim.Value</dd>
+                            }
+                        </dl>
+                    }
+                }
+                else
+                {
+                    <p class="small text-muted mt-4 mb-0">Faça login para ver as claims adicionadas pela Custom Authentication Extension.</p>
+                }
+            </div>
+        </div>
+    </div>
+</section>

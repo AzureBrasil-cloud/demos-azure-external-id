@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>teste_b2c</RootNamespace>
+    <UserSecretsId>teste-b2c-8f4c9f7e-5c6f-4d7f-9ad1-4b41f2d8f9f7</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Identity.Web" Version="4.10.0" />
+    <PackageReference Include="Sustainsys.Saml2.AspNetCore2" Version="2.11.0" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,29 @@
+﻿@model saml2.Models.ProtectedViewModel
+@{
+    ViewData["Title"] = "Área protegida";
+}
+
+<section class="py-3">
+    <h1 class="h3">Sessão autenticada via SAML2</h1>
+    <p class="text-muted">Claims recebidos na autenticação:</p>
+
+    <div class="table-responsive mt-3">
+        <table class="table table-striped table-sm align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="width:40%">Claim</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Claims)
+                {
+                    <tr>
+                        <td class="text-break">@item.Type</td>
+                        <td class="text-break">@item.Value</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

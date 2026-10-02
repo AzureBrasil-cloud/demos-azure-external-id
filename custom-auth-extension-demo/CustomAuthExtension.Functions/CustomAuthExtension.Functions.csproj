@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>CustomAuthExtension.Functions</RootNamespace>
+
+    <!-- Native AOT (PublishAot) ainda não roda no isolated worker: Worker.Core chama
+         FileVersionInfo.GetVersionInfo(Assembly.Location), que é vazio em AOT, e o processo cai no startup.
+         ReadyToRun é a pré-compilação AOT suportada pelo Functions: reduz o JIT no cold start
+         (o Entra espera no máximo 2s pela resposta). O código já é AOT-safe (JSON via source generator).
+         Publicar com RID: dotnet publish -c Release -r linux-x64 -->
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <SelfContained>false</SelfContained>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <FunctionsEnableMetadataSourceGen>true</FunctionsEnableMetadataSourceGen>
+    <FunctionsEnableExecutorSourceGen>true</FunctionsEnableExecutorSourceGen>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.52.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.3.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.1.0" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.23.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.23.0" />
+  </ItemGroup>
+
+  <!-- Mesmos modelos e regras de claims da Minimal API (CustomAuthExtension.Api). -->
+  <ItemGroup>
+    <Compile Include="..\CustomAuthExtension.Api\Models.cs" Link="Shared\Models.cs" />
+    <Compile Include="..\CustomAuthExtension.Api\DemoClaims.cs" Link="Shared\DemoClaims.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="host.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="local.settings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+</Project>

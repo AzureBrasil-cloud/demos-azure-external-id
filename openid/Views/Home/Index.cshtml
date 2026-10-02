@@ -1,0 +1,86 @@
+﻿@using System.Security.Claims
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Microsoft External ID";
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+
+    string? GetClaimValue(params string[] claimTypes)
+    {
+        foreach (var claimType in claimTypes)
+        {
+            var value = User.FindFirst(claimType)?.Value;
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    string? TryGetFirstEmailFromArrayClaim(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || !value.TrimStart().StartsWith("["))
+        {
+            return value;
+        }
+
+        try
+        {
+            var emails = JsonSerializer.Deserialize<string[]>(value);
+            return emails?.FirstOrDefault(email => !string.IsNullOrWhiteSpace(email));
+        }
+        catch
+        {
+            return value;
+        }
+    }
+
+    var displayName = GetClaimValue("name", "given_name", ClaimTypes.Name) ?? User.Identity?.Name ?? "Visitante";
+    var email = TryGetFirstEmailFromArrayClaim(GetClaimValue(ClaimTypes.Email, "email", "emails", "preferred_username")) ?? "Não informado";
+    var objectId = GetClaimValue("oid", "sub") ?? "Não informado";
+    var tenantId = GetClaimValue("tid", "tenantId") ?? "Não informado";
+    var customProfile = GetClaimValue("extension_ba5f5e290d3b46d39e6e087a8896c5fe_MeuCustomUserAtrribute") ?? "Não informado";
+}
+
+<section class="hero-panel">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <span class="status-pill">ASP.NET Core + OpenID Connect</span>
+            <h1 class="display-5 fw-semibold mt-3">Integração com Microsoft External ID pronta para uso</h1>
+            <p class="lead mt-3 text-muted">
+                Esta aplicação autentica usuários via OpenID Connect usando o tenant informado e expõe um fluxo simples de login, logout e visualização de claims.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <a class="btn btn-primary btn-lg" asp-controller="Account" asp-action="SignIn">Entrar com Microsoft</a>
+                <a class="btn btn-outline-secondary btn-lg" asp-controller="Home" asp-action="Privacy">Abrir área protegida</a>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="info-card">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                    <div>
+                        <div class="text-uppercase text-secondary small fw-semibold">Estado atual</div>
+                        <h2 class="h4 mt-1 mb-0">@displayName</h2>
+                    </div>
+                    <span class="badge @(isAuthenticated ? "text-bg-success" : "text-bg-secondary")">
+                        @(isAuthenticated ? "Autenticado" : "Não autenticado")
+                    </span>
+                </div>
+
+                <dl class="row mt-4 mb-0 small">
+                    <dt class="col-5 text-secondary">Email</dt>
+                    <dd class="col-7">@email</dd>
+                    <dt class="col-5 text-secondary">Object ID</dt>
+                    <dd class="col-7">@objectId</dd>
+                    <dt class="col-5 text-secondary">Tenant ID</dt>
+                    <dd class="col-7">@tenantId</dd>
+                    <dt class="col-5 text-secondary">Perfil custom</dt>
+                    <dd class="col-7">@customProfile</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</section>

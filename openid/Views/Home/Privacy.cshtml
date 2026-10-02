@@ -1,0 +1,36 @@
+﻿@model teste_b2c.Models.ProtectedViewModel
+@{
+    ViewData["Title"] = "Área protegida";
+}
+
+<section class="info-card">
+    <span class="status-pill">Recurso protegido</span>
+    <h1 class="display-6 fw-semibold mt-3">Você entrou com sucesso</h1>
+    <p class="text-muted mt-3 mb-4">
+        Esta página está protegida por autorização e só abre depois que o Microsoft External ID conclui o login.
+    </p>
+
+    <h2 class="h5 mt-4">Token retornado</h2>
+    <div class="token-box mt-3 mb-4">
+        <pre class="mb-0">@Model.IdToken</pre>
+    </div>
+
+    <h2 class="h5">Claims do token</h2>
+    <div class="table-responsive mt-3">
+        <table class="table align-middle mb-0">
+            <tbody>
+                @foreach (var item in Model.Claims)
+                {
+                    <tr>
+                        <th scope="row" class="text-secondary w-25">@item.Type</th>
+                        <td class="text-break">@item.Value</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4">
+        <a class="btn btn-outline-danger" asp-controller="Account" asp-action="SignOut">Sair</a>
+    </div>
+</section>

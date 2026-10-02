@@ -1,0 +1,21 @@
+# Secrets locais: nunca versionar (só o README da pasta)
+secrets/*
+!secrets/README.md
+
+# Rede de segurança caso algum secret fique fora de secrets/
+*.pfx
+*.p12
+*.key
+*.pem
+.state.env
+local.settings.json
+*.zip
+
+# Build / IDE
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+node_modules/
+dist/

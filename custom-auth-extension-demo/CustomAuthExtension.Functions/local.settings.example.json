@@ -1,0 +1,15 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "ExternalId__TenantId": "<tenant-id>",
+    "ExternalId__ApiClientId": "<api-client-id>",
+    "ExternalId__ApiIdentifierUri": "api://<api-host>/<api-client-id>",
+    "ExternalId__ApiClientSecret": "<API_CLIENT_SECRET>",
+    "ExternalId__AuthenticationEventsAppId": "99045fe1-7639-4a75-9d4a-577b6ca3810f"
+  },
+  "Host": {
+    "LocalHttpPort": 7300
+  }
+}

@@ -1,0 +1,24 @@
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@{
+    ViewData["Title"] = "SAML2 External ID";
+}
+
+<section class="py-4">
+    <h1 class="display-5">Integração SAML2 com External ID</h1>
+    <p class="lead mt-3">
+        Esta aplicação está configurada para autenticação federada via SAML2 no Microsoft External ID.
+    </p>
+    <div class="d-flex gap-2 mt-3">
+        <a class="btn btn-primary" asp-controller="Account" asp-action="SignIn">Entrar com SAML2</a>
+        <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Privacy">Ver área protegida</a>
+    </div>
+</section>
+
+<section class="mt-4">
+    <h2 class="h5">Configuração utilizada</h2>
+    <ul>
+        <li>Entity ID: @Configuration["Saml2:EntityId"]</li>
+        <li>Login URL: @Configuration["Saml2:LoginUrl"]</li>
+        <li>Metadata URL: federationmetadata.xml com appid da aplicação SAML</li>
+    </ul>
+</section>

@@ -1,0 +1,75 @@
+@model TokenViewModel
+@{
+    ViewData["Title"] = "Detalhes do token";
+}
+
+<section class="hero-panel">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <div>
+            <span class="status-pill">id_token</span>
+            <h1 class="h2 fw-semibold mt-3 mb-1">Detalhes do token</h1>
+            <p class="text-muted mb-0">Token emitido pelo External ID, guardado apenas no cookie de autenticação (sem banco de dados).</p>
+        </div>
+        <a class="btn btn-outline-secondary" asp-controller="Account" asp-action="SignOut">Sair</a>
+    </div>
+
+    <div class="row g-3 mt-2">
+        <div class="col-md-3"><div class="info-card h-100"><div class="small text-secondary">Emitido em (iat)</div><div class="fw-semibold">@(Model.IssuedAt?.ToString("u") ?? "—")</div></div></div>
+        <div class="col-md-3"><div class="info-card h-100"><div class="small text-secondary">Expira em (exp)</div><div class="fw-semibold">@(Model.ExpiresAt?.ToString("u") ?? "—")</div></div></div>
+        <div class="col-md-3"><div class="info-card h-100"><div class="small text-secondary">Cookie expira em</div><div class="fw-semibold">@(Model.CookieExpiresAt ?? "sessão")</div></div></div>
+        <div class="col-md-3"><div class="info-card h-100"><div class="small text-secondary">Audience (aud)</div><div class="fw-semibold text-break">@(Model.Audience ?? "—")</div></div></div>
+        <div class="col-12"><div class="info-card"><div class="small text-secondary">Issuer (iss)</div><div class="fw-semibold text-break">@(Model.Issuer ?? "—")</div></div></div>
+    </div>
+
+    <h2 class="h4 mt-4">Claims adicionadas pela Custom Authentication Extension</h2>
+    @if (Model.ExtensionClaims.Count == 0)
+    {
+        <div class="alert alert-warning" id="no-extension-claims">
+            Nenhuma claim da extensão foi encontrada. Verifique o listener OnTokenIssuanceStart, a claimsMappingPolicy e os logs da API.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm align-middle" id="extension-claims">
+                <thead><tr><th>Claim</th><th>Valor</th></tr></thead>
+                <tbody>
+                    @foreach (var claim in Model.ExtensionClaims)
+                    {
+                        <tr class="extension-claim-row"><td class="fw-semibold extension-claim-name">@claim.Type</td><td class="text-break">@claim.Value</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="row g-3 mt-2">
+        <div class="col-lg-4">
+            <h2 class="h5">Header</h2>
+            <div class="token-box"><pre>@Model.HeaderJson</pre></div>
+        </div>
+        <div class="col-lg-8">
+            <h2 class="h5">Payload</h2>
+            <div class="token-box"><pre id="token-payload">@Model.PayloadJson</pre></div>
+        </div>
+    </div>
+
+    <h2 class="h4 mt-4">Todas as claims do usuário</h2>
+    <div class="table-responsive">
+        <table class="table table-sm align-middle">
+            <thead><tr><th>Tipo</th><th>Valor</th></tr></thead>
+            <tbody>
+                @foreach (var claim in Model.Claims)
+                {
+                    <tr class="@(claim.FromExtension ? "extension-claim-row" : "")">
+                        <td class="fw-semibold">@claim.Type @if (claim.FromExtension) { <span class="badge text-bg-primary ms-1">extension</span> }</td>
+                        <td class="text-break">@claim.Value</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <h2 class="h4 mt-4">id_token (raw)</h2>
+    <div class="token-box"><pre class="small">@Model.IdToken</pre></div>
+</section>
