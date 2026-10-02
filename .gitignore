@@ -1,6 +1,5 @@
 # Secrets locais: nunca versionar (só o README da pasta)
 secrets/*
-!secrets/README.md
 
 # Rede de segurança caso algum secret fique fora de secrets/
 *.pfx
